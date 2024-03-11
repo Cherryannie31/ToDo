@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo List</title>
+<script src="./cursor.js""></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    h1 {
+        text-align: center;
+    }
+
+    .empty-state {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .checklist-icon {
+        width: 150px;
+        height: 150px;
+        display: block;
+    }
+
+    .donelist-icon {
+        width: 150px;
+        height: 150px;
+        display: block;
+    }
+
+    #todo-input {
+        border: #000 2px solid;
+        border-radius: 5px;
+    }
+
+    .submit {
+        border-radius: 5px;
+        background-color: #000;
+        color: #fff;
+    }
+    
+    .submit:hover {
+        background-color: #544e4e;
+    }
+
+
+    #todo-list form {
+        margin: 0 auto;
+        max-width: 600px;
+        height: 40px;
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .show { 
+        /* height: 30vh; */
+        margin-top: 20px;
+    }
+
+    .show div {
+        margin: 0 auto;
+        width: 50%;
+    }
+
+    #list {
+        border-bottom: black 2px solid;
+    }
+
+    input[type="text"] {
+        width: 75%;
+        padding: 5px;
+        margin: 0 10px;
+    }
+
+    input[type="checkbox"] {
+        display: none;
+    }
+
+    button {
+        float: right;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+    }
+
+    ul {
+        padding: 0 10px;
+        list-style: none;
+        text-align: start;
+    }
+
+    li {
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .todo-list:empty {
+        display: none;
+    }
+
+    .done-list:empty {
+        display: none;
+    }
+
+    .todo-list:empty + .todo-empty-state  {
+        display: flex;
+    }
+
+    .done-list:empty + .done-empty-state {
+        display: flex;
+    }
+
+    #todos li {
+        background-color: rgba(240, 161, 168,0.5);
+        color: #a61b29;
+    }
+
+    .tick {
+        width: 15px;
+        height: 15px;
+        border: 3px solid #a61b29;
+        border-radius: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+    
+    .tick:hover::before {
+        content: '✓';
+        font-size: 20px;
+    }
+
+    #dones li {
+        background-color: rgba(85, 187, 138,0.5);
+        color: #1a6840;
+        text-align: center;
+    }
+
+    .done span {
+        text-decoration: line-through;
+    }
+
+    .delete-todo {
+        border: none;
+        background-color: transparent;
+        outline: none;
+        cursor: pointer;
+    }
+
+    .delete-todo svg {
+        width: 20px;
+        height: 20px;
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <div id="todo-list">
+        <form action="" class="todo-form">
+            <input type="text" id="todo-input" placeholder="Enter a new todo">
+            <button type="submit" class="submit">Add Todo</button>
+        </form>
+    </div>
+    <!-- 项目展示 -->
+    <div class="show">
+      <div id="list">
+        <h3>To-Do Items</h3>
+        <ul id="todos" class="todo-list"></ul>
+        <!-- 设置空状态提示 -->
+        <div class="empty-state todo-empty-state">
+            <svg class="checklist-icon"><use href="#checklist-icon"></use></svg>
+            <h4 class="empty-state_title" style="color: rgba(240, 161, 168,0.8);font-size: 20px;">Start Planning your day :) !</h4>
+        </div>
+      </div>
+
+      <div id="finished">
+        <h3>Finished</h3>
+        <ul id="dones" class="done-list"></ul>
+        <!-- 设置空状态提示 -->
+        <div class="empty-state done-empty-state">
+            <svg class="done-icon"><use href="#donelist-icon"></use></svg>
+            <h4 class="empty-state_title" style="color: rgba(85, 187, 138,0.8);font-size: 20px;">Come to tick your plans !</h4>
+        </div>
+      </div>
+    </div>
+
+<svg>
+    <defs>
+        <symbol id="delete-icon" viewBox="0 0 448 448">
+            <path d="m224 0c-123.710938 0-224 100.289062-224 224s100.289062 224 224 224 224-100.289062 224-224c-.132812-123.65625-100.34375-223.867188-224-224zm124.449219 325.824219c4.15625 4.015625 5.828125 9.964843 4.363281 15.558593s-5.835938 9.964844-11.429688 11.429688-11.542968-.207031-15.558593-4.363281l-101.824219-101.824219-101.824219 101.824219c-6.277343 6.0625-16.257812 5.976562-22.429687-.195313s-6.257813-16.152344-.195313-22.429687l101.824219-101.824219-101.824219-101.824219c-4.15625-4.015625-5.828125-9.964843-4.363281-15.558593s5.835938-9.964844 11.429688-11.429688 11.542968.207031 15.558593 4.363281l101.824219 101.824219 101.824219-101.824219c6.277343-6.0625 16.257812-5.976562 22.429687.195313s6.257813 16.152344.195313 22.429687l-101.824219 101.824219zm0 0" fill="#D80027" />
+          </symbol>
+
+          <symbol id="checklist-icon" viewBox="0 0 1024 1024">
+            <path d="M644 696.6v143.3c0 27.1-10.1 51.4-26.2 68.9s-37.8 28-61.9 28H161.7c-24 0-45.8-10.5-61.9-28S73.6 867 73.6 839.9V315.2c0-27.1 10.1-51.4 26.2-68.9 10.3-11.2 22.9-19.6 37-24.1v4.1c0.1 21.7 15 39.3 33.6 39.3 18.4 0 33.4-17.6 33.4-39.2v-8h27.5v8c0 21.7 14.9 39.2 33.4 39.2 18.4 0 33.4-17.6 33.4-39.2v-8h27.5v8c0 21.7 14.9 39.2 33.4 39.2 18.4 0 33.4-17.6 33.4-39.2v-8h27.5v8c0 21.7 14.9 39.2 33.4 39.2 18.4 0 33.4-17.6 33.4-39.2v-8H514v8c0 21.7 14.9 39.2 33.4 39.2 18.4 0 33.4-17.6 33.4-39.2v-4.1c14 4.5 26.7 12.9 37 24.1 16.1 17.5 26.2 41.8 26.2 68.9v169.9l11.6-7.7 11.6-7.7V315.2c-0.1-56.5-36.5-104.8-86.3-117.1V184c0-21.7-14.9-39.3-33.4-39.3-18.4 0-33.4 17.6-33.4 39.3v11h-27.5v-11c0-21.7-14.9-39.3-33.4-39.3-18.4 0-33.4 17.6-33.4 39.3v11h-27.5v-11c0-21.7-14.9-39.3-33.4-39.3-18.4 0-33.4 17.6-33.4 39.3v11H298v-11c0-21.7-14.9-39.3-33.4-39.3-18.4 0-33.4 17.6-33.4 39.3v11h-27.5v-11c0-21.7-14.9-39.3-33.4-39.3-18.4 0-33.4 17.6-33.4 39.3v14.1c-50.1 12.3-86.4 60.6-86.5 117.1v524.6c0.1 65.6 48.9 120.1 111.2 120.2h394.2c62.2-0.1 111.1-54.6 111.2-120.2V694.3c-3.8 0.5-7.6 0.9-11.6 1.3-3.5 0.4-7.4 0.7-11.4 1z" p-id="2639" fill="#a61b29"></path>
+            <path d="M542.8 657.8h-29c-3.2 0-5.8 2.6-5.8 5.9 0 3.2 2.6 5.8 5.8 5.8h29c3.2 0 5.8-2.6 5.8-5.8 0-3.3-2.6-5.9-5.8-5.9zM484.7 657.8h-29c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.8 5.8 5.8h29c3.2 0 5.8-2.6 5.8-5.8 0-3.3-2.6-5.9-5.8-5.9zM397.6 657.8c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.8 5.8 5.8h29c3.3 0 5.9-2.6 5.9-5.8 0-3.3-2.7-5.9-5.9-5.9h-29zM368.5 657.8h-29c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.8 5.8 5.8h29c3.2 0 5.8-2.6 5.8-5.8 0-3.3-2.6-5.9-5.8-5.9zM281.4 669.5h29c3.3 0 5.9-2.6 5.9-5.8 0-3.3-2.7-5.9-5.9-5.9h-29c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.8 5.8 5.8zM223.4 657.8c-3.2 0-5.9 2.6-5.8 5.9 0 3.2 2.6 5.8 5.8 5.8h29c3.3 0 5.9-2.6 5.9-5.8 0-3.3-2.7-5.9-5.9-5.9h-29zM165.3 657.8c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.8 5.8 5.8h29c3.3 0 5.9-2.6 5.9-5.8 0-3.3-2.7-5.9-5.9-5.9h-29zM194.4 572.5h-29c-3.3 0-5.9 2.6-5.9 5.8s2.7 5.8 5.9 5.8h29c3.2 0 5.8-2.6 5.9-5.8 0-3.3-2.7-5.8-5.9-5.8zM252.5 572.5h-29c-3.2 0-5.8 2.6-5.8 5.8s2.6 5.8 5.8 5.8h29c3.2 0 5.8-2.6 5.9-5.8-0.1-3.3-2.7-5.8-5.9-5.8zM281.5 584h29c3.2 0 5.8-2.6 5.8-5.8s-2.6-5.8-5.8-5.8h-29c-3.2 0-5.8 2.6-5.8 5.8s2.6 5.8 5.8 5.8zM368.5 572.5h-29c-3.2 0-5.8 2.6-5.8 5.8s2.6 5.8 5.8 5.8h29c3.3 0 5.9-2.6 5.8-5.8 0-3.3-2.6-5.8-5.8-5.8zM426.6 572.5h-29c-3.2 0-5.8 2.6-5.8 5.8s2.6 5.8 5.8 5.8h29c3.2 0 5.9-2.6 5.9-5.8 0-3.3-2.7-5.8-5.9-5.8zM484.7 572.5h-29c-3.2 0-5.8 2.6-5.8 5.8s2.6 5.8 5.8 5.8h29c3.2 0 5.8-2.6 5.8-5.8s-2.6-5.8-5.8-5.8zM542.8 572.5h-29c-3.2 0-5.8 2.6-5.8 5.8s2.6 5.8 5.8 5.8h29c3.2 0 5.8-2.6 5.8-5.8s-2.6-5.8-5.8-5.8zM542.8 486.9h-29c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.9 5.8 5.7h29c3.2 0 5.8-2.6 5.8-5.8 0-3.3-2.6-5.8-5.8-5.8zM484.7 486.9h-29c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.9 5.8 5.7h29c3.3 0 5.9-2.6 5.9-5.8 0-3.3-2.7-5.8-5.9-5.8zM397.6 498.4h29c3.2 0 5.8-2.6 5.8-5.8 0-3.2-2.6-5.8-5.8-5.8h-29c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.9 5.8 5.7zM368.5 486.9h-29c-3.2 0-5.8 2.7-5.8 5.9s2.6 5.9 5.8 5.7h29c3.2 0 5.8-2.6 5.8-5.8 0-3.3-2.6-5.8-5.8-5.8zM310.6 487h-29c-3.3 0-5.9 2.6-5.9 5.8 0.1 3.2 2.7 5.8 5.9 5.8h29c3.1 0 5.8-2.6 5.8-5.8-0.1-3.3-2.7-5.8-5.8-5.8zM252.5 487h-29c-3.2 0-5.9 2.6-5.8 5.8 0 3.2 2.6 5.8 5.8 5.8h29c3.3 0 5.9-2.6 5.9-5.8-0.1-3.3-2.7-5.8-5.9-5.8zM194.4 487v-0.1h-29c-3.2 0-5.8 2.6-5.8 5.8 0 3.3 2.6 5.9 5.8 5.9h29c3.3 0 5.9-2.6 5.9-5.8 0-3.3-2.7-5.8-5.9-5.8zM165.2 413h29c3.3 0 5.9-2.6 5.9-5.8s-2.6-5.8-5.9-5.8h-29c-3.3 0-5.9 2.6-5.9 5.8 0.1 3.3 2.7 5.8 5.9 5.8zM223.3 413h29c3.3 0 5.9-2.6 5.9-5.8s-2.6-5.8-5.8-5.8h-29.1c-3.2 0-5.8 2.6-5.8 5.8 0.1 3.3 2.6 5.8 5.8 5.8zM281.5 413h29c3.2 0 5.8-2.6 5.8-5.8s-2.6-5.8-5.8-5.8h-29c-3.2 0-5.8 2.6-5.8 5.8 0 3.3 2.6 5.8 5.8 5.8zM368.5 401.5h-29c-3.3 0-5.9 2.6-5.9 5.8 0 3.2 2.7 5.8 5.9 5.8h29c3.3 0 5.9-2.6 5.9-5.8s-2.6-5.8-5.9-5.8zM397.7 413h29c3.2 0 5.8-2.6 5.8-5.8s-2.7-5.8-5.8-5.8h-29c-3.2 0-5.8 2.6-5.8 5.8 0 3.3 2.6 5.8 5.8 5.8zM455.7 413h29c3.3 0 5.9-2.6 5.9-5.8s-2.6-5.8-5.9-5.8h-29c-3.3 0-5.9 2.6-5.9 5.8 0 3.3 2.7 5.8 5.9 5.8zM542.8 401.5h-29c-3.3 0-5.9 2.6-5.9 5.8 0 3.2 2.7 5.8 5.9 5.8h29c3.2 0 5.8-2.6 5.8-5.8s-2.6-5.8-5.8-5.8zM855.6 64c-65.1 0-117.8 52.7-117.8 117.8 0 49.1 30.1 91.1 72.7 108.9-0.2 1.3-0.5 2.7-0.8 4.2-1.5 6.9-4.9 14.2-9.3 16.9-2.1 1.3-3.1 3.8-2.5 6.2 0.5 2.4 2.5 4.1 4.9 4.4 0.2 0 4.4 0.6 10.9 0.6 15.1-0.1 43.8-2.9 61.9-25.1 55.5-9.5 97.7-57.9 97.7-116.1 0.1-65.1-52.6-117.8-117.7-117.8z m22 221.6c-0.1-0.1-0.2-0.2-0.4-0.3-0.1-0.1-0.3-0.2-0.5-0.3-2.8 0.4-4.9 1.1-6.5 1.9-0.7 0.3-1.2 0.6-1.8 1-0.3 0.5-0.6 0.9-1 1.3-1.1 1.4-2.3 2.9-3.5 4.2-2.2 2.3-4.6 4.3-7.1 6.1-13.2 9.3-30 11.5-41.1 11.7 2.6-4.5 4-9.5 5.1-13.9 0.2-1 0.4-2 0.6-2.9 0.4-2.1 0.7-4.1 0.9-5.8 0.1-0.7 0.2-1.4 0.2-2.2-0.6-1.6-2.1-3.1-3.5-4.3-0.9-0.7-1.9-1.3-2.7-2-1.5-0.9-3-1.6-3.8-2.1 0 0.4-0.1 0.5-0.1 0.6-37.2-16.6-63-53.8-63.1-97 0.1-58.6 47.6-106.1 106.2-106.2 58.7 0.1 106.1 47.6 106.2 106.2-0.1 51.3-36 93.8-84.1 104z" p-id="2640" fill="#a61b29"></path>
+            <path d="M888.2 140s-26.6-3.1-31.5 26.1c0 0-1.3-10.6-8.8-18.6-4.6-5-11.6-9.1-22.1-9H824.9l-2 0.1c-26.9 2-37.8 33.2-12.5 68.7 16.6 23.2 35.8 37.3 40.8 40.7 0.8 0.5 1.2 0.8 1.2 0.8s0.3-0.2 0.8-0.6c6.8-4.8 53-37.9 59.8-66.3 0.1-0.1 11.6-37.5-24.8-41.9zM871.3 482.2c-1.1-2.7-6.2-13.8-15.2-25.4-10.2-13-26.3-27.2-48.8-27.3-4.3 0-8.8 0.6-13.3 1.8-2.8-3.7-7.8-4.7-11.7-2.3l-37.5 23.5c-1.6 1-2.9 2.6-3.5 4.3l-47.4 31.5-26.7 17.7-11.6 7.7-11.6 7.7-15.7 10.4c-2.6 1.8-4.1 4.1-4.9 6.5-33 49.7-41.7 77.6-41.9 95.2-0.3 14.5 7.5 21.9 11.3 24 9.7 8 23 8.8 37.5 9.1 4.4 0 9.1-0.2 13.7-0.5 3.9-0.3 7.8-0.6 11.6-1 4-0.4 7.8-0.9 11.6-1.4 10.6-1.4 20.1-3.2 26.7-4.4 5.7-1 9.2-1.9 9.3-1.9 1.9-0.4 3.6-1.4 4.8-3 0.4-0.2 0.8-0.4 1.2-0.7l150.9-100.3c1.8-1.1 3-2.6 3.9-4.1l0.4-0.3c1.9-1.2 3.2-3.3 3.6-5.6 0.3-1.4 0.2-2.8-0.2-4.1 4.6-4.8 11.4-14.5 11.4-29.1 0.1-8.4-2.2-17.9-7.9-28zM676.2 644.9c-2.8 0.4-5.8 0.9-8.9 1.3-3.7 0.5-7.6 1-11.6 1.4-3.8 0.4-7.7 0.8-11.6 1-4.7 0.3-9.4 0.5-13.7 0.5-2.3 0-4.4 0-6.5-0.1 11-33.1-19.9-31.7-19.9-31.7-0.7-0.2-1.4-0.3-2.1-0.3 3.8-12.7 12-31.2 28.2-57l13.9 21 11.6 17.4 11.6 17.5 18.1 27.3c-2.6 0.5-5.8 1-9.1 1.7zM830.5 551l-6.8 4.6-5.9-8.9-56.2-84.2 4.2-2.7 7.4-4.6 11.2-7.1 4.6 6.7 54.9 79.7 3.4 4.8-16.8 11.7z m27.3-27.2l-6.4-9.3-46.5-67.5-5.6-8-4.7-6.9c2.3 1.4 4.1 3.5 5.7 5.7l0.6 0.9 5.5 8.2h0.9c14.3-0.1 26.4 9.6 35.1 20.6 4.4 5.6 7.7 11.1 9.9 15.2 1.1 2.1 2 3.8 2.5 4.9 0.5 1.1 0.7 1.6 0.7 1.6l0.5 1c4.5 8.1 6 14.5 6 19.6 0 6.2-2 10.7-4.2 14z" p-id="2641" fill="#a61b29"></path>
+        </symbol>
+
+        <symbol id="donelist-icon" viewBox="0 0 1024 1024" >
+            <path d="M451.1 472.5c-9.3 0-16.9-7.6-16.9-16.9 0-56.8-46.2-103-103-103s-103 46.2-103 103c0 9.3-7.6 16.9-16.9 16.9s-16.9-7.6-16.9-16.9c0-75.4 61.3-136.8 136.8-136.8S468 380.2 468 455.6c0 9.3-7.5 16.9-16.9 16.9z m361.3 0c-9.3 0-16.9-7.6-16.9-16.9 0-56.8-46.2-103-103-103s-103 46.2-103 103c0 9.3-7.6 16.9-16.9 16.9-9.3 0-16.9-7.6-16.9-16.9 0-75.4 61.4-136.8 136.8-136.8s136.8 61.4 136.8 136.8c-0.1 9.3-7.6 16.9-16.9 16.9zM180.3 815.2C104.8 732.4 63.2 625 63.2 512.9c0-247.4 201.3-448.7 448.7-448.7s448.7 201.3 448.7 448.7c0 112.1-41.6 219.5-117.1 302.3l-24.9-22.7c69.8-76.6 108.3-175.8 108.3-279.5-0.1-228.9-186.2-415-415-415s-415 186.1-415 414.9c0 103.7 38.5 203 108.3 279.6l-24.9 22.7z m76.9 146.3c-56.3 0-102-45.8-102-102 0-56.3 45.8-102 102-102s102 45.8 102 102c0.1 56.3-45.7 102-102 102z m0-170.3c-37.7 0-68.3 30.6-68.3 68.3 0 37.7 30.6 68.3 68.3 68.3s68.3-30.6 68.3-68.3c0-37.7-30.6-68.3-68.3-68.3z m254.7 170.3c-66.2 0-129.9-14.1-189.4-41.8l14.3-30.6c55 25.7 114 38.7 175.2 38.7 61.2 0 120.1-13 175.1-38.7l14.3 30.6c-59.6 27.8-123.4 41.8-189.5 41.8z m235.2-202.2c55.2-10.7 108.9 25.5 119.6 80.8 10.7 55.2-25.5 108.9-80.8 119.6-55.2 10.7-108.9-25.5-119.6-80.8-10.7-55.2 25.6-108.9 80.8-119.6z m32.4 167.3c37-7.2 61.2-43.1 54.1-80.1-7.2-37-43.1-61.2-80.1-54.1-37 7.2-61.2 43.1-54.1 80.1 7.2 37 43.1 61.2 80.1 54.1z m-268-144c-68.3 0-133.3-39.8-183-112-5.3-7.7-3.3-18.2 4.3-23.5 7.7-5.3 18.2-3.3 23.5 4.3 43.2 62.8 98.3 97.4 155.2 97.4 57.2 0 112.6-34.9 155.9-98.4 5.3-7.7 15.8-9.7 23.4-4.4 7.7 5.3 9.7 15.7 4.4 23.4-49.7 73-115 113.2-183.7 113.2z" p-id="2614" fill="#1a6840"></path>
+        </symbol>
+    </defs>
+</svg>
+<script>
+    // 定义待办列表
+    let todoList = [];
+    // 定义完成列表
+    let doneList = [];
+
+    // 渲染ul
+   function render(item) {
+    // 本地存储
+    localStorage.setItem('todoItemsRef', JSON.stringify(todoList));
+    localStorage.setItem('doneItemsRef', JSON.stringify(doneList));
+
+    // 获取todos、dones父节点
+    const todoItems = document.querySelector('#todos');
+    const doneItems = document.querySelector('#dones');
+    // 判断是否标记完成
+    const checked = item.isDone ? 'done' : '';
+
+    const selected = document.querySelector(`[data-key='${item.id}']`);
+
+        // 检查ticked标记
+        if (item.ticked || item.deleted) {
+            selected.remove();
+            if (todoList.length === 0) {
+                todoItems.innerHTML = '';
+            } else if (doneList.length === 0) {
+                doneItems.innerHTML = '';
+            }
+            return ;
+        }
+
+    const node = document.createElement("li");
+    node.setAttribute('class', `todo-item ${checked}`);
+    node.setAttribute('data-key', item.id);
+    
+    // todo列表栏 && finish列表栏
+    if (checked === '') {
+        node.innerHTML = `
+            <span>${item.text}</span>
+            <input type="checkbox" id="${item.id}" />
+            <label for="${item.id}" class="tick"></label>
+        `
+        todoItems.append(node);
+    } else if (checked === 'done') {
+        node.innerHTML = `
+            <span>${item.text}</span>
+            <button class="delete-todo">
+                <svg><use href="#delete-icon"></use></svg>
+            </button>
+        `
+        doneItems.append(node);
+    }
+   } 
+
+    // 添加函数
+    function addTodo(text) {
+        const letters = "abcdefghijklmnopqrstuvwxyz";
+        const randomLetter = letters[Math.floor(Math.random() * letters.length)]; // 输出：随机小写字母
+
+        const todo = {
+            text,
+            isDone: false, // default: false
+            id: Date.now()+randomLetter,
+        }
+
+        todoList.push(todo);
+        render(todo);
+        console.log(todoList);
+    }
+
+    const form = document.querySelector(".todo-form");
+    // 设置监听器
+    form.addEventListener("submit", event => {
+        // 防止表单提交后刷新页面
+        event.preventDefault();
+
+        const input = document.querySelector("#todo-input");
+        const text = input.value.trim();
+        if (text !== '') {
+            addTodo(text);
+            input.value = '';
+            input.focus();
+        }
+    });
+
+    // 标记一个事件已达成
+    const todoItems = document.querySelector('#todos');
+
+    function Tick(key) {
+        clickEffect();
+        const index = todoList.findIndex(item => item.id === key);
+        // 渲染完成事项
+        todoList[index].isDone = !todoList[index].isDone;
+        doneList.push(todoList[index]);
+        console.log(doneList);
+        render(todoList[index]);
+
+        // 标记deleted状态，创建新的待办事项
+        const todo = {
+            ticked: true,
+            ...todoList[index]
+        }
+        todoList = todoList.filter(item => item.id !== key);
+        render(todo)
+    }
+
+    todoItems.addEventListener('click', event => {
+        if (event.target.classList.contains('tick')) {
+            const itemKey = event.target.parentElement.dataset.key;
+            Tick(itemKey);
+        }
+    })
+
+    // 删除已完成事件
+    const doneItems = document.querySelector("#dones");
+
+    function Delete(key) {
+        clickEffect();
+        const index = doneList.findIndex(item => item.id === key);
+        const done = {
+            deleted: true,
+            ...doneList[index]
+        }
+        doneList = doneList.filter(item => item.id !== key);
+        render(done);
+    }
+
+    doneItems.addEventListener('click', event => {
+        if (event.target.classList.contains('delete-todo')) {
+            const itemKey = event.target.parentElement.dataset.key;
+            Delete(itemKey);
+        }
+    })
+
+    // 进入页面加载localStorage的所有项目
+    document.addEventListener('DOMContentLoaded', () => {
+        const ref = localStorage.getItem('todoItemsRef');
+        if (ref) {
+            todoList = JSON.parse(ref);
+            todoList.forEach(element => {
+                render(element);
+            });
+        }
+    })
+</script>
+</body>
+</html>
